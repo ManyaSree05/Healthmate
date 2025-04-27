@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>National Immunization Schedule</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #c2e6ca, #a0dffb); /* Hospital green and blue */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: bold;
+      color: #027a8b; /* Bold hospital blue */
+      text-shadow: 2px 2px #1dcb77; /* Deep hospital green */
+    }
+    .card {
+      margin-bottom: 1rem;
+      border-radius: 15px;
+      border: 2px solid #d6efe8; /* Soft hospital green */
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: #f4fbf9; /* Light hospital green */
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .card-title {
+      font-weight: 600;
+      color: #027a8b; /* Bold hospital blue */
+    }
+    .card-text {
+      color: #034c42; /* Deep hospital green */
+    }
+    .form-check-label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #034c42;
+    }
+    .checked {
+      text-decoration: line-through;
+      color: #28d378 !important; /* Soft green for completed tasks */
+    }
+    .week-section {
+      margin-bottom: 2rem;
+    }
+    .container {
+      margin-top: 2rem;
+      padding: 2rem;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #757575;
+    }
+    button {
+      background: #027a8b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #025d6a; /* Darker hospital blue */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">National Immunization Schedule</h1>
+    <div id="schedule">
+      <!-- Week sections with vaccine cards will be inserted dynamically -->
+    </div>
+    <!-- Vaccination History Button -->
+    <div class="text-center mt-4">
+      <button type="button" onclick="viewVaccinationHistory()">Vaccination History</button>
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Immunization Tracker | Designed with 💖</footer>
+
+  <script>
+    const vaccines = [
+      { name: "BCG", weeks: ["At birth"] },
+      { name: "Hepatitis B - Birth dose", weeks: ["At birth"] },
+      { name: "OPV-0", weeks: ["At birth"] },
+      { name: "OPV", weeks: ["6 weeks", "10 weeks", "14 weeks"] },
+      { name: "Pentavalent", weeks: ["6 weeks", "10 weeks", "14 weeks"] },
+      { name: "Pneumococcal Vaccine (PCV)", weeks: ["6 weeks", "14 weeks", "9-12 months"] },
+      { name: "Rotavirus", weeks: ["6 weeks", "10 weeks", "14 weeks"] },
+      { name: "IPV", weeks: ["6 weeks", "14 weeks"] },
+      { name: "Measles-Rubella (1st dose)", weeks: ["9-12 months"] },
+      { name: "JE-1", weeks: ["9-12 months"] },
+      { name: "DPT Booster-1", weeks: ["16-24 months"] },
+      { name: "Measles-Rubella (2nd dose)", weeks: ["16-24 months"] },
+      { name: "OPV Booster", weeks: ["16-24 months"] },
+      { name: "DPT Booster-2", weeks: ["5-6 years"] },
+      { name: "JE-2", weeks: ["16-24 months"] },
+      { name: "Vitamin A (2nd dose)", weeks: ["16-18 months"] },
+      { name: "Vitamin A (3rd dose)", weeks: ["2 years"] },
+      { name: "Vitamin A (4th dose)", weeks: ["2.5 years"] },
+      { name: "Vitamin A (5th dose)", weeks: ["3 years"] },
+      { name: "Vitamin A (6th dose)", weeks: ["3.5 years"] },
+      { name: "Vitamin A (7th dose)", weeks: ["4 years"] },
+      { name: "Vitamin A (8th dose)", weeks: ["4.5 years"] },
+      { name: "Vitamin A (9th dose)", weeks: ["5 years"] },
+      { name: "TT", weeks: ["10-16 years"] },
+    ];
+
+    const schedule = document.getElementById("schedule");
+
+    const weekGroups = {};
+    vaccines.forEach(vaccine => {
+      vaccine.weeks.forEach(week => {
+        if (!weekGroups[week]) {
+          weekGroups[week] = [];
+        }
+        weekGroups[week].push(vaccine.name);
+      });
+    });
+
+    for (const [week, vaccineNames] of Object.entries(weekGroups)) {
+      const weekSection = document.createElement("div");
+      weekSection.className = "week-section";
+
+      const weekTitle = document.createElement("h3");
+      weekTitle.textContent = `Vaccines for ${week}`;
+      weekTitle.className = "text-primary mb-3";
+
+      const row = document.createElement("div");
+      row.className = "row";
+
+      vaccineNames.forEach((vaccineName, index) => {
+        const card = document.createElement("div");
+        card.className = "col-md-4";
+
+        card.innerHTML = `
+          <div class="card p-3">
+            <h5 class="card-title">${vaccineName}</h5>
+            <p class="card-text">Recommended at: ${week}</p>
+            <div class="form-check">
+              <input class="form-check-input markDone" type="checkbox" id="${vaccineName}-${week}">
+              <label class="form-check-label" for="${vaccineName}-${week}">
+                Mark as Taken
+              </label>
+            </div>
+          </div>
+        `;
+        row.appendChild(card);
+      });
+
+      weekSection.appendChild(weekTitle);
+      weekSection.appendChild(row);
+      schedule.appendChild(weekSection);
+    }
+
+    document.addEventListener("change", (e) => {
+      if (e.target.classList.contains("markDone")) {
+        const card = e.target.closest(".card");
+        if (e.target.checked) {
+          card.querySelector(".card-title").classList.add("checked");
+          card.querySelector(".card-text").classList.add("checked");
+        } else {
+          card.querySelector(".card-title").classList.remove("checked");
+          card.querySelector(".card-text").classList.remove("checked");
+        }
+      }
+    });
+
+    // Function to handle Vaccination History button click
+    function viewVaccinationHistory() {
+      alert("Viewing Vaccination History");
+      // You can replace this alert with code to fetch and display history data.
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

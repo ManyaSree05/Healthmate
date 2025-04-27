@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-image:url('https://static.vecteezy.com/system/resources/thumbnails/017/398/144/small/healthcare-services-annual-health-checkup-heart-rate-pulse-measurement-pills-antibiotics-dna-diseases-genes-illustration-on-light-blue-hexagonal-background-health-and-medicine-concept-vector.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container-custom {
+      background-color: #f3cbf6;
+      padding: 40px;
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    h3, h5 {
+      color: #343a40;
+      font-weight: 600;
+    }
+
+    h5 {
+      font-weight: 700;
+      color: #3a8ee6;
+    }
+
+    .card {
+      background-color: #f9f9f9;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn {
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 25px;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: #4e73df;
+      border: none;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #2e59d9;
+    }
+
+    .btn-warning {
+      background-color: #f6c23e;
+      border: none;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background-color: #e0a800;
+    }
+
+    .btn-success {
+      background-color: #1cc88a;
+      border: none;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #17a673;
+    }
+
+    .btn-outline-info {
+      border: 2px solid #17a2b8;
+      color: #17a2b8;
+      background-color: transparent;
+    }
+
+    .btn-outline-info:hover {
+      background-color: #17a2b8;
+      color: white;
+    }
+
+    .btn-link {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .btn-link:hover {
+      text-decoration: underline;
+    }
+
+    .card-body {
+      padding: 30px;
+    }
+
+    .card-columns {
+      column-count: 3;
+      column-gap: 20px;
+    }
+
+    .card-columns .card {
+      break-inside: avoid;
+    }
+
+    /* Media Query for smaller screens */
+    @media (max-width: 768px) {
+      .card-columns {
+        column-count: 1;
+      }
+    }
+
+    .icon {
+      font-size: 1.5em;
+      color: #3a8ee6;
+      margin-right: 10px;
+    }
+
+    .card p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .card-footer {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container container-custom">
+    <div class="card p-4 shadow">
+      <h3 class="mb-3"><%= account.name %>'s Dashboard</h3>
+      <p><strong>Age:</strong> <%= account.age %> | <strong>Gender:</strong> <%= account.gender %> | <strong>Category:</strong> <%= account.category %></p>
+
+      <% if (account.category === 'child') { %>
+        <h5 class="mt-4">🍼 Vaccination Schedule</h5>
+        <a href="/baby/<%= account.id %>/vaccination-schedule" class="btn btn-primary btn-sm mt-2">View Full Vaccination Schedule</a>
+        <a href="/accounts/<%= account.id %>/documents" class="btn btn-primary btn-sm mt-2">Upload Health Documents</a>
+        <a href="/accounts/<%= account.id %>/basic_info" class="btn btn-primary">🩺 Basic Health Info</a>
+        <a href="/accounts/<%= account.id %>/special_conditions" class="btn btn-warning">⚠️ Special Conditions</a>
+      <% } else if (account.category === 'elder') { %>
+        <h5 class="mt-4">🧓 Health Monitoring</h5>
+        <a href="/accounts/<%= account.id %>/documents" class="btn btn-primary btn-sm mt-2">Personal Health Files</a>
+        <a href="/accounts/<%= account.id %>/self-tracker" class="btn btn-success btn-sm mt-2">Self Health Tracker</a>
+        <a href="/accounts/<%= account.id %>/basic_info" class="btn btn-primary">🩺 Basic Health Info</a>
+        <a href="/accounts/<%= account.id %>/special_conditions" class="btn btn-warning">⚠️ Special Conditions</a>
+        <a href="/accounts/<%= account.id %>/medications" class="btn btn-success">💊 Medications & Reminders</a>
+      <% } else { %>
+        <h5 class="mt-4">🏥 General Health Dashboard</h5>
+        <a href="/accounts/<%= account.id %>/documents" class="btn btn-primary btn-sm mt-2">Personal Health Files</a>
+        <a href="/accounts/<%= account.id %>/self-tracker" class="btn btn-success btn-sm mt-2">Self Health Tracker</a>
+        <a href="/accounts/<%= account.id %>/basic_info" class="btn btn-primary">🩺 Basic Health Info</a>
+        <a href="/accounts/<%= account.id %>/special_conditions" class="btn btn-warning">⚠️ Special Conditions</a>
+        <a href="/accounts/<%= account.id %>/medications" class="btn btn-success">💊 Medications & Reminders</a>
+      <% } %>
+
+      <div class="card-footer">
+        <a href="/accounts" class="btn btn-link mt-3">← Back to All Accounts</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

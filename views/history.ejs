@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vaccination History</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+  <h2 class="mb-4">Vaccination History</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Vaccine Name</th>
+        <th>Week</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% records.forEach(r => { %>
+        <tr>
+          <td><%= r.vaccine_name %></td>
+          <td><%= r.schedule_week %></td>
+          <td><%= r.is_taken ? "✅ Taken" : "❌ Not Taken" %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

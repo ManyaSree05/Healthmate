@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vaccination Schedule</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #c2e6ca, #a0dffb);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #f4fbf9;
+      border: 1px solid #d6efe8;
+      border-radius: 12px;
+    }
+    .badge {
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">National Immunization Schedule</h1>
+    <div id="schedule" class="row"></div>
+
+    <div class="text-center mt-4">
+      <button id="saveBtn" class="btn btn-success">Save Selected Vaccines</button>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/accounts/<%= accountId %>" class="btn btn-secondary">← Back to Baby Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    const vaccines = [
+      { name: "BCG", weeks: ["At birth"] },
+      { name: "Hepatitis B - Birth dose", weeks: ["At birth"] },
+      { name: "OPV-0", weeks: ["At birth"] },
+      { name: "OPV", weeks: ["6 weeks", "10 weeks", "14 weeks"] },
+      { name: "Pentavalent", weeks: ["6 weeks", "10 weeks", "14 weeks"] },
+      { name: "Pneumococcal Vaccine (PCV)", weeks: ["6 weeks", "14 weeks", "9-12 months"] },
+      { name: "Rotavirus", weeks: ["6 weeks", "10 weeks", "14 weeks"] },
+      { name: "IPV", weeks: ["6 weeks", "14 weeks"] },
+      { name: "Measles-Rubella (1st dose)", weeks: ["9-12 months"] },
+      { name: "JE-1", weeks: ["9-12 months"] },
+      { name: "DPT Booster-1", weeks: ["16-24 months"] },
+      { name: "Measles-Rubella (2nd dose)", weeks: ["16-24 months"] },
+      { name: "OPV Booster", weeks: ["16-24 months"] },
+      { name: "DPT Booster-2", weeks: ["5-6 years"] },
+      { name: "JE-2", weeks: ["16-24 months"] },
+      { name: "Vitamin A (2nd dose)", weeks: ["16-18 months"] },
+      { name: "Vitamin A (3rd dose)", weeks: ["2 years"] },
+      { name: "Vitamin A (4th dose)", weeks: ["2.5 years"] },
+      { name: "Vitamin A (5th dose)", weeks: ["3 years"] },
+      { name: "Vitamin A (6th dose)", weeks: ["3.5 years"] },
+      { name: "Vitamin A (7th dose)", weeks: ["4 years"] },
+      { name: "Vitamin A (8th dose)", weeks: ["4.5 years"] },
+      { name: "Vitamin A (9th dose)", weeks: ["5 years"] },
+      { name: "TT", weeks: ["10-16 years"] }
+    ];
+
+    const existingRecords = <%- JSON.stringify(records || []) %>;
+    const accountId = "<%= accountId %>";
+    const schedule = document.getElementById("schedule");
+    const weekGroups = {};
+
+    // Group vaccines by weeks
+    vaccines.forEach(vaccine => {
+      vaccine.weeks.forEach(week => {
+        if (!weekGroups[week]) weekGroups[week] = [];
+        weekGroups[week].push(vaccine.name);
+      });
+    });
+
+    // Render schedule
+    for (const [week, vaccineNames] of Object.entries(weekGroups)) {
+      const col = document.createElement("div");
+      col.className = "col-md-12 mb-3";
+
+      const title = document.createElement("h4");
+      title.innerText = `Vaccines for ${week}`;
+      col.appendChild(title);
+
+      const row = document.createElement("div");
+      row.className = "row";
+
+      vaccineNames.forEach(name => {
+        const card = document.createElement("div");
+        card.className = "col-md-4 mb-3";
+
+        const record = existingRecords.find(r => r.vaccine_name === name && r.week_due === week);
+        
+        // More robust check for "taken" status
+        const isTaken = record && (
+          record.status === 'taken' || 
+          record.status === true || 
+          record.status === 1 || 
+          record.is_taken === 1
+        );
+
+        const checkedAttr = isTaken ? 'checked disabled' : '';
+        const badge = isTaken ? '<span class="badge bg-success">✔ Taken</span>' : '';
+
+        card.innerHTML = `
+          <div class="card p-3">
+            <h5 class="card-title">${name} ${badge}</h5>
+            <p class="card-text">Due: ${week}</p>
+            <div class="form-check">
+              <input class="form-check-input markDone" type="checkbox" data-name="${name}" data-week="${week}" ${checkedAttr}>
+              <label class="form-check-label">Mark as Taken</label>
+            </div>
+          </div>
+        `;
+        row.appendChild(card);
+      });
+
+      col.appendChild(row);
+      schedule.appendChild(col);
+    }
+
+    // When a checkbox is checked — just show "Pending Save"
+    document.addEventListener('change', (e) => {
+      if (e.target.classList.contains('markDone') && !e.target.disabled) {
+        const checkbox = e.target;
+        const card = checkbox.closest('.card');
+        const title = card.querySelector('.card-title');
+        const vaccineName = checkbox.dataset.name;
+
+        if (checkbox.checked) {
+          title.innerHTML = `${vaccineName} <span class="badge bg-warning text-dark">Pending Save</span>`;
+        } else {
+          title.innerHTML = `${vaccineName}`;
+        }
+      }
+    });
+
+    // Handle Save Button
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const checkboxes = document.querySelectorAll(".markDone:checked:not(:disabled)");
+      const vaccinesToSave = Array.from(checkboxes).map(cb => ({
+        vaccineName: cb.dataset.name,
+        weekDue: cb.dataset.week,
+        status: 'taken'
+      }));
+
+      if (vaccinesToSave.length === 0) {
+        alert("No new vaccines selected.");
+        return;
+      }
+
+      try {
+        const res = await fetch("/baby/save-vaccines", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accountId, vaccines: vaccinesToSave })
+        });
+
+        if (res.ok) {
+          alert("Vaccination statuses saved successfully!");
+
+          checkboxes.forEach(cb => {
+            cb.disabled = true;
+
+            const card = cb.closest('.card');
+            const title = card.querySelector('.card-title');
+            const vaccineName = cb.dataset.name;
+
+            title.innerHTML = `${vaccineName} <span class="badge bg-success">✔ Taken</span>`;
+          });
+        } else {
+          throw new Error("Failed to save");
+        }
+      } catch (err) {
+        alert("Error saving vaccination data.");
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

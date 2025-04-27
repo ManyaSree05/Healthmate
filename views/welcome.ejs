@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to HealthMate</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Ensure public folder is set up -->
+    <style>
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            width: 120px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Left Section -->
+        <div class="welcome-container">
+            <div class="logo-container">
+                <img src="/logo1.png" alt="HealthMate Logo"> <!-- Static image from public/images folder -->
+            </div>
+            <header>
+                <h1>Welcome to <span class="brand">HealthMate</span></h1>
+                <p>Your personal health companion for managing medical records, scheduling vaccinations, and tracking vital signs.</p>
+            </header>
+            <div class="button-container">
+                <button class="btn" onclick="navigateTo('/login')">Login</button>
+                <button class="btn" onclick="navigateTo('/register')">Register</button>
+                <button class="btn" onclick="navigateTo('/about')">About</button>
+            </div>
+        </div>
+
+        <!-- Right Section: Sliding Images -->
+        <div class="slideshow-container">
+            <div class="slideshow">
+                <img src="/image2.jpg" alt="Image 1">
+                <img src="/image1.jpg" alt="Image 2">
+                <img src="/image3.jpg" alt="Image 3">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html>

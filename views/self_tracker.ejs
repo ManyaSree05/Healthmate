@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Self Tracker - HealthMate</title>
+  <style>
+    body {
+      background-image:url('https://media.istockphoto.com/id/1450240429/vector/modern-blue-medical-vector-wallpaper-futuristic-medical-icons-geometric-hexagon-shape.jpg?s=612x612&w=0&k=20&c=3kAYko8bfGlIwNrMNnEt_b9Xkj03rtbUoTk31bIPx-E=');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #def5b6;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2e7d32;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .btn {
+      background-color: #66bb6a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background-color: #43a047;
+    }
+    table {
+      margin-top: 20px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #a5d6a7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Self Health Tracker</h2>
+
+    <form method="POST" action="/accounts/<%= accountId %>/self-tracker">
+      <label>Exercise Type</label>
+      <input type="text" name="exercise" placeholder="e.g. Jogging" required>
+
+      <label>Duration (minutes)</label>
+      <input type="number" name="duration" required>
+
+      <label>Meditation Time (minutes)</label>
+      <input type="number" name="meditation" required>
+
+      <label>Sleep (hours)</label>
+      <input type="number" name="sleep" required>
+
+      <label>Screen Time (hours)</label>
+      <input type="number" name="screen_time" required>
+
+      <label>Notes</label>
+      <textarea name="notes" placeholder="Your notes..."></textarea>
+
+      <button type="submit" class="btn">Submit</button>
+    </form>
+
+    <% if (entries.length > 0) { %>
+      <h3>Previous Records</h3>
+      <table>
+        <tr>
+          <th>Date</th>
+          <th>Exercise</th>
+          <th>Duration</th>
+          <th>Meditation</th>
+          <th>Sleep</th>
+          <th>Screen</th>
+          <th>Notes</th>
+        </tr>
+        <% entries.forEach(entry => { %>
+          <tr>
+            <td><%= new Date(entry.created_at).toLocaleDateString() %></td>
+            <td><%= entry.exercise %></td>
+            <td><%= entry.duration %> mins</td>
+            <td><%= entry.meditation %> mins</td>
+            <td><%= entry.sleep %> hrs</td>
+            <td><%= entry.screen_time %> hrs</td>
+            <td><%= entry.notes %></td>
+          </tr>
+        <% }) %>
+      </table>
+    <% } %>
+  </div>
+</body>
+</html>
